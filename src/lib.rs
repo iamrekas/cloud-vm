@@ -39,10 +39,17 @@ pub fn version() -> Version {
 
 /// Version information stored in compressed files
 #[derive(Debug, Clone, Copy)]
+#[derive(PartialEq)]
 pub struct FileVersion {
     major: u8,
     minor: u8,
     patch: u8,
+}
+
+impl PartialEq<u8> for FileVersion {
+    fn eq(&self, other: &u8) -> bool {
+        self.major == *other
+    }
 }
 
 impl FileVersion {
