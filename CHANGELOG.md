@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.7](https://github.com/iamrekas/cloud-vm/compare/v0.1.6...v0.1.7) (2024-12-27)
+
+
+### Bug Fixes
+
+* remove workflow_dispatch input for tag_name in release workflows ([f4ce719](https://github.com/iamrekas/cloud-vm/commit/f4ce719136d2899dbbed5331c8e4495bcab2945c))
+
 ## [0.1.6](https://github.com/iamrekas/cloud-vm/compare/v0.1.5...v0.1.6) (2024-12-27)
 
 
