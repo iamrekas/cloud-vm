@@ -1,0 +1,136 @@
+name: Release Binary
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  build-and-upload:
+    strategy:
+      matrix:
+        include:
+          # Linux builds
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+            name: linux-x86_64
+            binary_name: cloud-vm
+          # - os: ubuntu-latest
+          #   target: i686-unknown-linux-gnu
+          #   name: linux-x86
+          #   binary_name: cloud-vm
+          # - os: ubuntu-latest
+          #   target: aarch64-unknown-linux-gnu
+          #   name: linux-arm64
+          #   binary_name: cloud-vm
+          # - os: ubuntu-latest
+          #   target: armv7-unknown-linux-gnueabihf
+          #   name: linux-armv7
+          #   binary_name: cloud-vm
+          # - os: ubuntu-latest
+          #   target: arm-unknown-linux-gnueabihf
+          #   name: linux-armv6
+          #   binary_name: cloud-vm
+          
+          # macOS builds
+          # - os: macos-latest
+          #   target: x86_64-apple-darwin
+          #   name: macos-x86_64
+          #   binary_name: cloud-vm
+          # - os: macos-latest
+          #   target: aarch64-apple-darwin
+          #   name: macos-arm64
+          #   binary_name: cloud-vm
+          
+          # Windows builds
+          # - os: windows-latest
+          #   target: x86_64-pc-windows-msvc
+          #   name: windows-x86_64
+          #   binary_name: cloud-vm.exe
+          # - os: windows-latest
+          #   target: i686-pc-windows-msvc
+          #   name: windows-x86
+          #   binary_name: cloud-vm.exe
+
+    runs-on: ${{ matrix.os }}
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          target: ${{ matrix.target }}
+          override: true
+      
+      - name: Install Windows build tools
+        if: runner.os == 'Windows'
+        uses: microsoft/setup-msbuild@v1.1
+
+      - name: Install cross-compilation tools
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc-multilib
+          sudo apt-get install -y gcc-arm-linux-gnueabihf
+          sudo apt-get install -y gcc-aarch64-linux-gnu
+
+      - name: Install Windows MSVC target
+        if: runner.os == 'Windows'
+        run: |
+          rustup target add ${{ matrix.target }}
+          rustup toolchain install stable-msvc
+      
+      - name: Build Binary
+        run: cargo build --release --target ${{ matrix.target }}
+      
+      - name: Generate Checksums
+        shell: bash
+        run: |
+          cd target/${{ matrix.target }}/release
+          sha256sum ${{ matrix.binary_name }} > ${{ matrix.binary_name }}.sha256
+          cd ../../..
+      
+      - name: Package Binary (Unix)
+        if: runner.os != 'Windows'
+        run: |
+          cd target/${{ matrix.target }}/release
+          tar czf ../../../cloud-vm-${{ matrix.name }}.tar.gz cloud-vm cloud-vm.sha256
+          cd ../../..
+      
+      - name: Package Binary (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          cd target/${{ matrix.target }}/release
+          7z a ../../../cloud-vm-${{ matrix.name }}.zip cloud-vm.exe cloud-vm.exe.sha256
+          cd ../../..
+      
+      - name: Upload Binary
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./target/${{ matrix.target }}/release/${{ matrix.binary_name }}
+          asset_name: cloud-vm-${{ matrix.name }}
+          asset_content_type: application/octet-stream
+
+      - name: Upload SHA256
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./target/${{ matrix.target }}/release/${{ matrix.binary_name }}.sha256
+          asset_name: cloud-vm-${{ matrix.name }}.sha256
+          asset_content_type: text/plain
+
+      - name: Upload Archive
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./cloud-vm-${{ matrix.name }}.${{ runner.os == 'Windows' && 'zip' || 'tar.gz' }}
+          asset_name: cloud-vm-${{ matrix.name }}.${{ runner.os == 'Windows' && 'zip' || 'tar.gz' }}
+          asset_content_type: application/octet-stream

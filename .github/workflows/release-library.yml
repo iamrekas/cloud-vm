@@ -1,0 +1,150 @@
+name: Release Library
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  build-and-upload:
+    strategy:
+      matrix:
+        include:
+          # Desktop Libraries
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+            name: linux-x86_64
+          # - os: ubuntu-latest
+          #   target: i686-unknown-linux-gnu
+          #   name: linux-x86
+          # - os: ubuntu-latest
+          #   target: aarch64-unknown-linux-gnu
+          #   name: linux-arm64
+          # - os: macos-latest
+          #   target: x86_64-apple-darwin
+          #   name: macos-x86_64
+          # - os: macos-latest
+          #   target: aarch64-apple-darwin
+          #   name: macos-arm64
+          # - os: windows-latest
+          #   target: x86_64-pc-windows-msvc
+          #   name: windows-x86_64
+          # - os: windows-latest
+          #   target: i686-pc-windows-msvc
+          #   name: windows-x86
+          
+          # iOS Libraries
+          # - os: macos-latest
+          #   target: aarch64-apple-ios
+          #   name: ios-arm64
+          # - os: macos-latest
+          #   target: x86_64-apple-ios
+          #   name: ios-x86_64
+          # - os: macos-latest
+          #   target: aarch64-apple-ios-sim
+          #   name: ios-sim-arm64
+          
+          # Android Libraries
+          # - os: ubuntu-latest
+          #   target: aarch64-linux-android
+          #   name: android-arm64
+          # - os: ubuntu-latest
+          #   target: armv7-linux-androideabi
+          #   name: android-armv7
+          # - os: ubuntu-latest
+          #   target: x86_64-linux-android
+          #   name: android-x86_64
+          # - os: ubuntu-latest
+          #   target: i686-linux-android
+          #   name: android-x86
+
+    runs-on: ${{ matrix.os }}
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          target: ${{ matrix.target }}
+          override: true
+      
+      - name: Install Windows build tools
+        if: runner.os == 'Windows'
+        uses: microsoft/setup-msbuild@v1.1
+
+      - name: Install Windows MSVC target
+        if: runner.os == 'Windows'
+        run: |
+          rustup target add ${{ matrix.target }}
+          rustup toolchain install stable-msvc
+
+      - name: Install Android NDK
+        if: contains(matrix.target, 'android')
+        uses: nttld/setup-ndk@v1
+        with:
+          ndk-version: r25b
+      
+      - name: Set up Android env
+        if: contains(matrix.target, 'android')
+        run: |
+          echo "ANDROID_NDK_HOME=$ANDROID_NDK_ROOT" >> $GITHUB_ENV
+          echo "ANDROID_NDK_ROOT=$ANDROID_NDK_ROOT" >> $GITHUB_ENV
+      
+      - name: Build Library
+        run: cargo build --release --target ${{ matrix.target }} --lib
+      
+      - name: Generate Checksums
+        shell: bash
+        run: |
+          cd target/${{ matrix.target }}/release
+          if [ "${{ runner.os }}" = "Windows" ]; then
+            sha256sum libcloud_vm.rlib > libcloud_vm.rlib.sha256
+          else
+            sha256sum libcloud_vm.rlib > libcloud_vm.rlib.sha256
+          fi
+          cd ../../..
+      
+      - name: Package Library (Unix)
+        if: runner.os != 'Windows'
+        run: |
+          cd target/${{ matrix.target }}/release
+          tar czf ../../../libcloud-vm-${{ matrix.name }}.tar.gz libcloud_vm.rlib libcloud_vm.rlib.sha256
+          cd ../../..
+      
+      - name: Package Library (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          cd target/${{ matrix.target }}/release
+          7z a ../../../libcloud-vm-${{ matrix.name }}.zip libcloud_vm.rlib libcloud_vm.rlib.sha256
+          cd ../../..
+      
+      - name: Upload Library
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./target/${{ matrix.target }}/release/libcloud_vm.rlib
+          asset_name: libcloud-vm-${{ matrix.name }}
+          asset_content_type: application/octet-stream
+
+      - name: Upload SHA256
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./target/${{ matrix.target }}/release/libcloud_vm.rlib.sha256
+          asset_name: libcloud-vm-${{ matrix.name }}.sha256
+          asset_content_type: text/plain
+
+      - name: Upload Archive
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./libcloud-vm-${{ matrix.name }}.${{ runner.os == 'Windows' && 'zip' || 'tar.gz' }}
+          asset_name: libcloud-vm-${{ matrix.name }}.${{ runner.os == 'Windows' && 'zip' || 'tar.gz' }}
+          asset_content_type: application/octet-stream
