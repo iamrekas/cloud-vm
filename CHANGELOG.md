@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.5](https://github.com/iamrekas/cloud-vm/compare/v0.1.4...v0.1.5) (2024-12-27)
+
+
+### Bug Fixes
+
+* implement PartialEq for FileVersion ([4cc97a5](https://github.com/iamrekas/cloud-vm/commit/4cc97a540190de0893f68b49df837ebb074731d9))
+* trigger new release for testing binary and library builds ([1689df5](https://github.com/iamrekas/cloud-vm/commit/1689df5807d86c7350b5b655e3595138baa89d7b))
+
 ## [0.1.4](https://github.com/iamrekas/cloud-vm/compare/v0.1.3...v0.1.4) (2024-12-27)
 
 
