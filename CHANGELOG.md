@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.3](https://github.com/iamrekas/cloud-vm/compare/v0.1.2...v0.1.3) (2024-12-27)
+
+
+### Bug Fixes
+
+* trigger new release for testing binary and library builds ([a3b353b](https://github.com/iamrekas/cloud-vm/commit/a3b353bf58322a389b3aaa8f6e74b1f2022df7a1))
+
 ## [0.1.2](https://github.com/iamrekas/cloud-vm/compare/v0.1.1...v0.1.2) (2024-12-27)
 
 
