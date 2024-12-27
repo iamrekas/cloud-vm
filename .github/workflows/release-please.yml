@@ -20,4 +20,37 @@ jobs:
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
           package-name: cloud-vm
+      
+      # Trigger binary release workflow
+      - name: Trigger Binary Release
+        if: ${{ steps.release.outputs.release_created }}
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'release-binary.yml',
+              ref: 'main',
+              inputs: {
+                tag_name: '${{ steps.release.outputs.tag_name }}'
+              }
+            });
 
+      # Trigger library release workflow
+      - name: Trigger Library Release
+        if: ${{ steps.release.outputs.release_created }}
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'release-library.yml',
+              ref: 'main',
+              inputs: {
+                tag_name: '${{ steps.release.outputs.tag_name }}'
+              }
+            });
