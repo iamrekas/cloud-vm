@@ -1,6 +1,8 @@
 name: Release Binary
 
 on:
+  repository_dispatch:
+    types: [workflow-dispatch]
   workflow_dispatch:
     inputs:
       tag_name:

@@ -25,5 +25,5 @@ jobs:
         if: ${{ steps.release.outputs.release_created }}
         uses: peter-evans/repository-dispatch@v3
         with:
-          event-type: workflow_dispatch
+          event-type: workflow-dispatch
           client-payload: '{"tag_name": "${{ steps.release.outputs.tag_name }}"}'
