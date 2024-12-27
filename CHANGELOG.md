@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.1](https://github.com/iamrekas/cloud-vm/compare/v0.1.0...v0.1.1) (2024-12-27)
+
+
+### Bug Fixes
+
+* trigger release-please for next release ([990e782](https://github.com/iamrekas/cloud-vm/commit/990e782874d5a83bd24f85072ca23033bea9b832))
+
 ## 0.1.0 (2024-12-27)
 
 
