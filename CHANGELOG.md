@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.8](https://github.com/iamrekas/cloud-vm/compare/v0.1.7...v0.1.8) (2024-12-27)
+
+
+### Bug Fixes
+
+* comment out unused build configurations in release workflows ([d1c3a75](https://github.com/iamrekas/cloud-vm/commit/d1c3a750745006dc5f4ae5d021c6cd6b68dbb7d9))
+
 ## [0.1.7](https://github.com/iamrekas/cloud-vm/compare/v0.1.6...v0.1.7) (2024-12-27)
 
 
