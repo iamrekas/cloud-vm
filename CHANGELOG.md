@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.9](https://github.com/iamrekas/cloud-vm/compare/v0.1.8...v0.1.9) (2024-12-27)
+
+
+### Bug Fixes
+
+* add tag_name input to release workflows for better versioning ([8581ad6](https://github.com/iamrekas/cloud-vm/commit/8581ad614dbfbe2886b748e8b30faa106cd886d0))
+
 ## [0.1.8](https://github.com/iamrekas/cloud-vm/compare/v0.1.7...v0.1.8) (2024-12-27)
 
 
