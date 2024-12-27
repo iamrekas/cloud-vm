@@ -1,6 +1,6 @@
 [package]
 name = "cloud-vm"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2021"
 authors = ["Rekas <aure369@gmail.com>"]
 description = "EVM-based compression system with nestable operations and version tracking"
