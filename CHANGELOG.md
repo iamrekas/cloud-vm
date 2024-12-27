@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.0](https://github.com/iamrekas/cloud-vm/compare/v0.1.9...v0.2.0) (2024-12-27)
+
+
+### Features
+
+* add human-readable sizes and compression ratios ([96ad4ae](https://github.com/iamrekas/cloud-vm/commit/96ad4ae0ffab89944231a3c1135a1212a8eefe9b))
+
 ## [0.1.9](https://github.com/iamrekas/cloud-vm/compare/v0.1.8...v0.1.9) (2024-12-27)
 
 
