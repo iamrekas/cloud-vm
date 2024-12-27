@@ -100,25 +100,22 @@ jobs:
         shell: bash
         run: |
           cd target/${{ matrix.target }}/release
-          if [ "${{ runner.os }}" = "Windows" ]; then
-            sha256sum libcloud_vm.rlib > libcloud_vm.rlib.sha256
-          else
-            sha256sum libcloud_vm.rlib > libcloud_vm.rlib.sha256
-          fi
+          cp libcloud_vm.rlib libcloud-vm-${{ matrix.name }}.rlib
+          sha256sum libcloud-vm-${{ matrix.name }}.rlib > libcloud-vm-${{ matrix.name }}.rlib.sha256
           cd ../../..
       
       - name: Package Library (Unix)
         if: runner.os != 'Windows'
         run: |
           cd target/${{ matrix.target }}/release
-          tar czf ../../../libcloud-vm-${{ matrix.name }}.tar.gz libcloud_vm.rlib libcloud_vm.rlib.sha256
+          tar czf ../../../libcloud-vm-${{ matrix.name }}.tar.gz libcloud-vm-${{ matrix.name }}.rlib libcloud-vm-${{ matrix.name }}.rlib.sha256
           cd ../../..
       
       - name: Package Library (Windows)
         if: runner.os == 'Windows'
         run: |
           cd target/${{ matrix.target }}/release
-          7z a ../../../libcloud-vm-${{ matrix.name }}.zip libcloud_vm.rlib libcloud_vm.rlib.sha256
+          7z a ../../../libcloud-vm-${{ matrix.name }}.zip libcloud-vm-${{ matrix.name }}.rlib libcloud-vm-${{ matrix.name }}.rlib.sha256
           cd ../../..
       
       - name: Upload Release Assets
@@ -127,6 +124,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           files: |
-            ./target/${{ matrix.target }}/release/libcloud_vm.rlib
-            ./target/${{ matrix.target }}/release/libcloud_vm.rlib.sha256
+            ./target/${{ matrix.target }}/release/libcloud-vm-${{ matrix.name }}.rlib
+            ./target/${{ matrix.target }}/release/libcloud-vm-${{ matrix.name }}.rlib.sha256
             ./libcloud-vm-${{ matrix.name }}.${{ runner.os == 'Windows' && 'zip' || 'tar.gz' }}
