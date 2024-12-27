@@ -63,8 +63,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             fs::write(&output, &output_data)?;
             
             println!("Compressed {} -> {}", input.display(), output.display());
-            println!("Original size: {} bytes", data.len());
-            println!("Compressed size: {} bytes", compressed_size);
+            let original_size = data.len();
+            let compressed_size = output_data.len();
+            let ratio = (1.0 - (compressed_size as f64 / original_size as f64)) * 100.0;
+            
+            println!("Original size: {} ({} bytes)", humansize::format_size(original_size, humansize::BINARY), original_size);
+            println!("Compressed size: {} ({} bytes)", humansize::format_size(compressed_size, humansize::BINARY), compressed_size);
+            println!("Compression ratio: {:.1}%", ratio);
             println!("Version: {}", version());
             println!("Operations applied: {:?}", compressed.op_chain());
         },
@@ -87,8 +92,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             fs::write(&output, decompressed)?;
             
             println!("Decompressed {} -> {}", input.display(), output.display());
-            println!("Compressed size: {} bytes", input_data.len());
-            println!("Decompressed size: {} bytes", fs::metadata(&output)?.len());
+            let compressed_size = input_data.len();
+            let decompressed_size = fs::metadata(&output)?.len();
+            let ratio = (1.0 - (compressed_size as f64 / decompressed_size as f64)) * 100.0;
+            
+            println!("Compressed size: {} ({} bytes)", humansize::format_size(compressed_size, humansize::BINARY), compressed_size);
+            println!("Decompressed size: {} ({} bytes)", humansize::format_size(decompressed_size, humansize::BINARY), decompressed_size);
+            println!("Compression ratio: {:.1}%", ratio);
         },
     }
 

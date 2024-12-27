@@ -10,6 +10,7 @@ readme = "README.md"
 [dependencies]
 clap = { version = "4.5", features = ["derive"] }
 semver = "1.0"
+humansize = "2.1"
 
 [dev-dependencies]
 criterion = "0.5"
