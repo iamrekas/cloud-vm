@@ -111,6 +111,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
+          tag_name: ${{ github.event.client_payload.tag_name }}
           files: |
             ./target/${{ matrix.target }}/release/cloud-vm-${{ matrix.name }}
             ./target/${{ matrix.target }}/release/cloud-vm-${{ matrix.name }}.sha256
