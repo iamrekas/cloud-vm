@@ -88,8 +88,8 @@ jobs:
         shell: bash
         run: |
           cd target/${{ matrix.target }}/release
-          cp ${{ matrix.binary_name }} cloud-vm-${{ matrix.name }}
-          sha256sum cloud-vm-${{ matrix.name }} > cloud-vm-${{ matrix.name }}.sha256
+          cp ${{ matrix.binary_name }} cloud-vm-${{ matrix.name }}${{ runner.os == 'Windows' && '.exe' || '' }}
+          sha256sum cloud-vm-${{ matrix.name }}${{ runner.os == 'Windows' && '.exe' || '' }} > cloud-vm-${{ matrix.name }}${{ runner.os == 'Windows' && '.exe' || '' }}.sha256
           cd ../../..
       
       - name: Package Binary (Unix)
@@ -103,7 +103,7 @@ jobs:
         if: runner.os == 'Windows'
         run: |
           cd target/${{ matrix.target }}/release
-          7z a ../../../cloud-vm-${{ matrix.name }}.zip cloud-vm-${{ matrix.name }} cloud-vm-${{ matrix.name }}.sha256
+          7z a ../../../cloud-vm-${{ matrix.name }}.zip cloud-vm-${{ matrix.name }}.exe cloud-vm-${{ matrix.name }}.exe.sha256
           cd ../../..
       
       - name: Upload Release Assets
@@ -113,6 +113,6 @@ jobs:
         with:
           tag_name: ${{ github.event.client_payload.tag_name }}
           files: |
-            ./target/${{ matrix.target }}/release/cloud-vm-${{ matrix.name }}
-            ./target/${{ matrix.target }}/release/cloud-vm-${{ matrix.name }}.sha256
+            ./target/${{ matrix.target }}/release/cloud-vm-${{ matrix.name }}${{ runner.os == 'Windows' && '.exe' || '' }}
+            ./target/${{ matrix.target }}/release/cloud-vm-${{ matrix.name }}${{ runner.os == 'Windows' && '.exe' || '' }}.sha256
             ./cloud-vm-${{ matrix.name }}.${{ runner.os == 'Windows' && 'zip' || 'tar.gz' }}
