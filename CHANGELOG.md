@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.6](https://github.com/iamrekas/cloud-vm/compare/v0.1.5...v0.1.6) (2024-12-27)
+
+
+### Bug Fixes
+
+* add repository_dispatch trigger to release workflows ([6469ef7](https://github.com/iamrekas/cloud-vm/commit/6469ef77ea47ef67d0dd70187a9d06f6b6d6a62e))
+
 ## [0.1.5](https://github.com/iamrekas/cloud-vm/compare/v0.1.4...v0.1.5) (2024-12-27)
 
 
