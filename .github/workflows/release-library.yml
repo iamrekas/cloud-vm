@@ -121,32 +121,12 @@ jobs:
           7z a ../../../libcloud-vm-${{ matrix.name }}.zip libcloud_vm.rlib libcloud_vm.rlib.sha256
           cd ../../..
       
-      - name: Upload Library
-        uses: actions/upload-release-asset@v1
+      - name: Upload Release Assets
+        uses: softprops/action-gh-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: https://uploads.github.com/repos/${{ github.repository }}/releases/tags/${{ github.ref_name }}/assets{?name,label}
-          asset_path: ./target/${{ matrix.target }}/release/libcloud_vm.rlib
-          asset_name: libcloud-vm-${{ matrix.name }}
-          asset_content_type: application/octet-stream
-
-      - name: Upload SHA256
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: https://uploads.github.com/repos/${{ github.repository }}/releases/tags/${{ github.ref_name }}/assets{?name,label}
-          asset_path: ./target/${{ matrix.target }}/release/libcloud_vm.rlib.sha256
-          asset_name: libcloud-vm-${{ matrix.name }}.sha256
-          asset_content_type: text/plain
-
-      - name: Upload Archive
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: https://uploads.github.com/repos/${{ github.repository }}/releases/tags/${{ github.ref_name }}/assets{?name,label}
-          asset_path: ./libcloud-vm-${{ matrix.name }}.${{ runner.os == 'Windows' && 'zip' || 'tar.gz' }}
-          asset_name: libcloud-vm-${{ matrix.name }}.${{ runner.os == 'Windows' && 'zip' || 'tar.gz' }}
-          asset_content_type: application/octet-stream
+          files: |
+            ./target/${{ matrix.target }}/release/libcloud_vm.rlib
+            ./target/${{ matrix.target }}/release/libcloud_vm.rlib.sha256
+            ./libcloud-vm-${{ matrix.name }}.${{ runner.os == 'Windows' && 'zip' || 'tar.gz' }}
